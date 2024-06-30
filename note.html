@@ -138,13 +138,23 @@
 <script>
 function download() {
   var ol = document.getElementById('myList');
-  var items = Array.from(ol.getElementsByTagName('li')).map(li => li.textContent);
+  var items = Array.from(ol.getElementsByTagName('li')).map(li => {
+    var text = li.textContent;
+    var match = text.match(/^(.*?)『(.*?)』$/);
+    if (match) {
+      var author = match[1].trim();
+      var title = match[2].trim();
+      return '"' + title + '","' + author + '"';
+    } else {
+      return '"' + text + '",""';
+    }
+  });
   var csv = items.join('\n');
   
   var hiddenElement = document.createElement('a');
-  hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+  hiddenElement.href = 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csv);
   hiddenElement.target = '_blank';
-  hiddenElement.download = 'output.csv';
+  hiddenElement.download = 'readingrecord.csv';
   hiddenElement.click();
 }
 </script>
