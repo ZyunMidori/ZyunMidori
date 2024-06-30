@@ -8,6 +8,7 @@
     <title>墓場</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Kurenaido&display=swap');
 
         body {
             background-color: white;
@@ -19,6 +20,7 @@
             font-size: 30px;
             color: #000;
             text-align: left;
+            font-family: "Zen Kurenaido", sans-serif;
         }
         .nav-menu {
             overflow: hidden;
@@ -38,7 +40,7 @@
             color: black;
         }
         li {
-            font-size: 105%;
+            font-size: 90%;
             color: black;
         }
         hr {
@@ -59,34 +61,20 @@
             margin: 10px 0;
             text-align: center;
             font-weight: normal;
-            cursor: pointer; /* クリック可能なカーソルを設定 */
-            transition: all 0.3s ease; /* アニメーションの設定 */
-            position: relative;
         }
-        h3:hover {
-            background-color: #f0f0f0; /* ハイライト時の背景色 */
+        .scrollable-list {
+            width: 90%;
+            height: 300px;
+            overflow-y: scroll;
+            background-color: #dddddd;
+            padding: 15px;
         }
-        .hidden {
-            display: none; /* アコーディオンの中身を最初は非表示にする */
-        }
-        .show {
-            display: block; /* クリックで表示する内容 */
-            animation: fadeIn 0.5s ease; /* フェードインアニメーション */
-        }
-        .triangle {
-            position: absolute;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-top: 8px solid black;
-            transition: transform 0.3s ease, border-color 0.3s ease; /* 回転と色の変化のアニメーション */
-        }
-        .rotate {
-            transform: translateY(-50%) rotate(180deg);
+        ol {
+            padding-left: 20px;
+            margin: 25px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            text-align: left;
         }
         .button {
             display: inline-block;
@@ -102,6 +90,8 @@
             font-size: 18px; 
             font-weight: 600;
             margin: auto;
+            margin-top: 10px;
+            margin-bottom: 10px;
             display: block;
             width: fit-content;
         }
@@ -126,10 +116,8 @@
 <ul>
     <li>Twitterが死んだらここに書く</li>
 </ul>
-<h3 class="accordion-header" onclick="toggleAccordion(this)">
-    読書記録(2024/01/01~)
-    <span class="triangle"></span>
-</h3>
+<h3>読書記録(2024/01/01~)</h3>
+<center><div class="scrollable-list">
 <ol id="myList" class="hidden">
     <li>落合 仁司『構造主義の数理:ソシュール、ラカン、ドゥルーズ』</li>
     <li>柞刈 湯葉『幽霊を信じない理系大学生、霊媒師のバイトをする』</li>
@@ -187,6 +175,7 @@
     <li>グレッグ・イーガン『プランク・ダイヴ』</li>
     <li>グレッグ・イーガン『ひとりっ子』</li>
 </ol>
+</div></center>
 <button class="button" onclick="download()">読書記録をダウンロード(CSV)</button>
 
 <script>
@@ -216,15 +205,6 @@ function download() {
   hiddenElement.target = '_blank';
   hiddenElement.download = fileName;
   hiddenElement.click();
-}
-
-function toggleAccordion(element) {
-  var ol = document.getElementById('myList');
-  ol.classList.toggle('hidden');
-  ol.classList.toggle('show');
-  
-  var triangle = element.querySelector('.triangle');
-  triangle.classList.toggle('rotate');
 }
 </script>
 
