@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,21 +13,26 @@
             background-color: white;
             font-size: 120%;
             font-family: 'M PLUS 1p', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .header {
             background-color: white;
             font-size: 30px;
             color: #000;
             text-align: left;
+            width: 100%;
         }
         .nav-menu {
             overflow: hidden;
             background-color: black;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
         }
         .nav-menu a {
             font-size: 15px;
-            float: left;
-            display: block;
             color: white;
             text-align: center;
             padding: 14px 16px;
@@ -38,30 +42,28 @@
             background-color: white;
             color: black;
         }
-        li {
-            font-size: 105%;
-            color: black;
-        }
         hr {
             margin-top: 6px;
             margin-bottom: 6px;
+            width: 100%;
         }
         h2 {
             font-size: 30px;
             color: black;
             text-align: center;
         }
-        h3 {
-            font-size: 22px; /* テキストサイズを少し小さく */
-            color: black;
-            border: 4px solid black; /* 線を太く */
-            border-radius: 20px; /* 丸みを増やす */
-            padding: 5px;
-            margin: 10px 0;
-            text-align: center;
-            font-weight: normal;
+        .banner-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .banner-container img {
+            max-width: 100%;
+            height: auto;
         }
     </style>
+</head>
 <body>
 <div class="header">
   <h1>墓場</h1>
@@ -76,4 +78,8 @@
 </div>
 <hr size="10px" color="black">
 <h2>バナー</h2>
-<a href="https://zyunmidori.github.io/ZyunMidori/index.html"><img src="https://zyunmidori.github.io/ZyunMidori/banner.png" width="300"></a>
+<div class="banner-container">
+  <a href="https://zyunmidori.github.io/ZyunMidori/index.html"><img src="https://zyunmidori.github.io/ZyunMidori/banner.png" alt="バナー"></a>
+</div>
+</body>
+</html>
