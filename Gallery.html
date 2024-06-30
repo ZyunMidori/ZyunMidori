@@ -13,6 +13,7 @@
             background-color: white;
             font-size: 120%;
             font-family: 'M PLUS 1p', sans-serif;
+            text-align: center; /* ページ全体を中央揃え */
         }
         .header {
             background-color: white;
@@ -55,7 +56,23 @@
             text-align: center;
             font-weight: normal;
         }
+        ul {
+            list-style-type: none; /* リストのマーカーを削除 */
+            padding: 0;
+        }
+        ul li {
+            margin-bottom: 20px; /* リストアイテム間のマージンを追加 */
+        }
+        ul img {
+            max-width: 300px; /* 画像の最大幅を設定 */
+            height: auto; /* 高さを自動調整 */
+            display: block; /* 画像をブロック要素として中央揃え */
+            margin: 0 auto; /* 左右のマージンを自動で設定して中央揃え */
+            border: 4px solid black; /* 枠線を追加 */
+            border-radius: 10px; /* 枠線の角を丸める */
+        }
     </style>
+</head>
 <body>
 <div class="header">
   <h1>墓場</h1>
@@ -72,20 +89,20 @@
 <h2>つくったもの</h2>
 <h3>blender</h3>
 <ul>
-    <img src="/ZyunMidori/1.png">
-    <img src="/ZyunMidori/2.png">
-    <img src="/ZyunMidori/3.png">
-    <img src="/ZyunMidori/4.png">
-    <img src="/ZyunMidori/5.png">
-    <img src="/ZyunMidori/6.png">
+    <li><img src="/ZyunMidori/1.png"></li>
+    <li><img src="/ZyunMidori/2.png"></li>
+    <li><img src="/ZyunMidori/3.png"></li>
+    <li><img src="/ZyunMidori/4.png"></li>
+    <li><img src="/ZyunMidori/5.png"></li>
+    <li><img src="/ZyunMidori/6.png"></li>
 </ul>
 <h3>inkscape</h3>
 <ul>
-    <img src="/ZyunMidori/7.png">
-    <img src="/ZyunMidori/8.png">
-    <img src="/ZyunMidori/9.png">
-    <img src="/ZyunMidori/10.png">
-    <img src="/ZyunMidori/11.png">
+    <li><img src="/ZyunMidori/7.png"></li>
+    <li><img src="/ZyunMidori/8.png"></li>
+    <li><img src="/ZyunMidori/9.png"></li>
+    <li><img src="/ZyunMidori/10.png"></li>
+    <li><img src="/ZyunMidori/11.png"></li>
 </ul>
 
 </body>
