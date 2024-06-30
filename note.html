@@ -133,6 +133,21 @@
     <li>グレッグ・イーガン『プランク・ダイヴ』</li>
     <li>グレッグ・イーガン『ひとりっ子』</li>
 </ol>
+<button onclick="download()">読書記録をダウンロード(CSV)</button>
+
+<script>
+function download() {
+  var ol = document.getElementById('myList');
+  var items = Array.from(ol.getElementsByTagName('li')).map(li => li.textContent);
+  var csv = items.join('\n');
+  
+  var hiddenElement = document.createElement('a');
+  hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+  hiddenElement.target = '_blank';
+  hiddenElement.download = 'output.csv';
+  hiddenElement.click();
+}
+</script>
 
 </body>
 </html>
