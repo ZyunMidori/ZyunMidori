@@ -104,7 +104,7 @@
     <li>チャイナ・ミエヴィル『爆発の三つの欠片』</li>
     <li>アンリ・ポアンカレ『科学と仮説』</li>
     <li>グレッグ・イーガン『順列都市』</li>
-    <li>彌永 昌吉,赤攝也『公理と証明』</li>
+    <li>彌永 昌吉,赤 攝也『公理と証明』</li>
     <li>チャイナ・ミエヴィル『ジェイクをさがして』</li>
     <li>木澤 佐登志『闇の精神史』</li>
     <li>白井 仁人『量子力学の諸解釈』</li>
@@ -151,10 +151,16 @@ function download() {
   });
   var csv = items.join('\n');
   
+  var today = new Date();
+  var year = today.getFullYear();
+  var month = ('0' + (today.getMonth() + 1)).slice(-2);
+  var day = ('0' + today.getDate()).slice(-2);
+  var fileName = 'readingrecord_' + year + month + day + '.csv';
+  
   var hiddenElement = document.createElement('a');
   hiddenElement.href = 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csv);
   hiddenElement.target = '_blank';
-  hiddenElement.download = 'readingrecord.csv';
+  hiddenElement.download = fileName;
   hiddenElement.click();
 }
 </script>
