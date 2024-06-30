@@ -55,6 +55,23 @@
             text-align: center;
             font-weight: normal;
         }
+        .button {
+            display: inline-block;
+            padding: 10px 30px; 
+            border: 3px solid #000000;
+            border-radius: 40px;
+            font-family: "M PLUS 1p", sans-serif;
+            color: black;
+            background-color: white;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 18px; 
+            font-weight: 600;
+            margin: auto;
+            display: block;
+            width: fit-content;
+        }
     </style>
 <body>
 <div class="header">
@@ -133,7 +150,7 @@
     <li>グレッグ・イーガン『プランク・ダイヴ』</li>
     <li>グレッグ・イーガン『ひとりっ子』</li>
 </ol>
-<button onclick="download()">読書記録をダウンロード(CSV)</button>
+<button class="button" onclick="download()">読書記録をダウンロード(CSV)</button>
 
 <script>
 function download() {
