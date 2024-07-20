@@ -68,12 +68,23 @@
             display: block; /* 画像をブロック要素として中央揃え */
             margin: 0 auto; /* 左右中央揃え */
         }
+        .pc-img {
+            display: block;
+        }
+        .mobile-img {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .pc-img {
+                display: none;
+            }
+            .mobile-img {
+                display: block;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="header">
-  <h1>墓場</h1>
-</div>
 <hr size="10px" color="black">
 <div class="nav-menu">
   <a href="index.html">ホーム</a>
@@ -83,6 +94,7 @@
   <a href="banner.html">バナー</a>
 </div>
 <hr size="10px" color="black">
-<img src="/ZyunMidori/g2.png">
+<img src="/ZyunMidori/g2.png" class="pc-img">
+<img src="/ZyunMidori/g1.png" class="mobile-img">
 </body>
 </html>
