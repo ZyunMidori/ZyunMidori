@@ -117,11 +117,11 @@
     <li>読書記録をCSVでダウンロードできるようにしました。</li>
     <li>ISBNの存在する書籍の詳細としてGoogleブックスのページをリンクしました。（APIを使っているので結構時間かかります。要修正）</li>
     <li>GoogleBooksAPIから取得できた説明をCSVに追加しました。</li>
+    <li>CSVの要素にAPIから取得したものが含まれているのでダウンロードできないかもしれません。処理が終わったらダイアログが出るのでその後にダウンロードしてください。</li>
 </ul>
 <h3>読書記録(2024/01/01~)</h3>
 <center><div class="scrollable-list">
     <ol id="myList" class="hidden">
-    <li hidden data-isbn="ISBN">著者『タイトル』</li>
     <li data-isbn="9784309622033">グレッグ・イーガン『TAP』</li>
     <li data-isbn="9784152094476">グレゴリー・チャイティン『ダーウィンを数学で証明する』</li>
     <li data-isbn="9784150103026">カート・ヴォネガット・ジュニ『スローターハウス5』</li>
@@ -194,6 +194,8 @@
 </div>
 </center>
 <button class="button" onclick="download()">読書記録をダウンロード(CSV)</button>
+
+
 <script>
   var bookDataList = []; // グローバル変数を追加
 
@@ -248,6 +250,9 @@
       }
     }
 
+    // ダイアログを表示
+    alert('処理が完了しました。CSVをダウンロードできます。');
+
     return results;
   }
 
@@ -270,6 +275,7 @@
     await addLinksToList();
   });
 </script>
+
 
 <script>
   function download() {
