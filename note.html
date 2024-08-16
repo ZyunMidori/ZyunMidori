@@ -204,7 +204,7 @@ function download() {
       var author = match[1].trim();
       var title = match[2].trim();
       if (isbn && isbn.toLowerCase() !== "null") {
-        var link = 'https://www.books.or.jp/book-details/' + isbn;
+        var link = 'https://www.hanmoto.com/bd/isbn/' + isbn;
         li.innerHTML = author + '『<a href="' + link + '">' + title + '</a>』';
       }
       return '"' + title + '","' + author + '","' + isbn + '"';
@@ -237,7 +237,7 @@ document.addEventListener("DOMContentLoaded", function() {
       var author = match[1].trim();
       var title = match[2].trim();
       if (isbn && isbn.toLowerCase() !== "null") {
-        var link = 'https://www.books.or.jp/book-details/' + isbn;
+        var link = 'https://www.hanmoto.com/bd/isbn/' + isbn;
         li.innerHTML = author + '『<a href="' + link + '">' + title + '</a>』';
       }
     }
