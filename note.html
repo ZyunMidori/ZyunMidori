@@ -191,9 +191,9 @@
     <li data-isbn="9784150115944">グレッグ・イーガン『ひとりっ子』</li>
     </ol>
 </div>
-    <button class="button" onclick="download()">読書記録をダウンロード(CSV)</button>
+<button class="button" onclick="download()">読書記録をダウンロード(CSV)</button>
 <script>
-  async function download() {
+  async function addLinksToList() {
     var ol = document.getElementById('myList');
     var items = [];
 
@@ -219,7 +219,25 @@
     });
 
     await Promise.all(promises);
-    alert("すべての書籍にリンクが付与されました");
+
+    // 二重チェック
+    let allLinked = true;
+    for (let li of ol.getElementsByTagName('li')) {
+      if (!li.querySelector('a')) {
+        allLinked = false;
+        break;
+      }
+    }
+
+    if (allLinked) {
+      alert("すべての書籍にリンクが付与されました");
+    }
+
+    return items;
+  }
+
+  async function download() {
+    var items = await addLinksToList();
 
     var csv = items.join('\n');
     
@@ -248,33 +266,13 @@
   }
 
   document.addEventListener("DOMContentLoaded", async function() {
-    var ol = document.getElementById('myList');
+    // ページ読み込み時にリンクを付与
+    await addLinksToList();
 
-    var promises = Array.from(ol.getElementsByTagName('li')).map(async li => {
-      var text = li.textContent;
-      var isbn = li.getAttribute('data-isbn');
-      var match = text.match(/^(.*?)『(.*?)』$/);
-      if (match) {
-        var author = match[1].trim();
-        var title = match[2].trim();
-        var link = '';
-
-        if (isbn && isbn.toLowerCase() !== "null") {
-          link = await getBookLink(isbn);
-          if (link) {
-            li.innerHTML = author + '『<a href="' + link + '" target="_blank">' + title + '</a>』';
-          }
-        }
-      }
-    });
-
-    await Promise.all(promises);
-    alert("すべての書籍にリンクが付与されました");
+    // ボタンクリック時にCSVダウンロード
+    document.getElementById('downloadButton').addEventListener('click', download);
   });
 </script>
-
-
-
 </center>
 </body>
 </html>
