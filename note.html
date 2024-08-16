@@ -115,7 +115,8 @@
 <ul>
     <li>Twitterが死んだらここに書く</li>
     <li>読書記録をCSVでダウンロードできるようにしました。</li>
-    <li>ISBNの存在する書籍の詳細としてGoogleブックスのページをリンクしました。</li>
+    <li>ISBNの存在する書籍の詳細としてGoogleブックスのページをリンクしました。（APIを使っているので結構時間かかります。要修正）</li>
+    <li>本のあらすじ？をGoogleBooksAPIで取得できたのでCSVに追加しました。</li>
 </ul>
 <h3>読書記録(2024/01/01~)</h3>
 <center><div class="scrollable-list">
@@ -204,17 +205,19 @@
 
       // ISBNが'ISBN'または'null'の場合、スキップ
       if (!match || !isbn || isbn.toLowerCase() === "isbn" || isbn.toLowerCase() === "null") {
-        return { title: text, author: '', isbn: '' };
+        return { title: text, author: '', isbn: '', description: '' };
       }
 
       var author = match[1].trim();
       var title = match[2].trim();
       var link = '';
+      var description = '';
 
-      link = await getBookLink(isbn);
-      if (link) {
-        li.innerHTML = author + '『<a href="' + link + '" target="_blank">' + title + '</a>』';
-        return { title, author, isbn };
+      const bookData = await getBookLink(isbn);
+      if (bookData.link) {
+        li.innerHTML = author + '『<a href="' + bookData.link + '" target="_blank">' + title + '</a>』';
+        description = bookData.description || 'No description available';
+        return { title, author, isbn, description };
       } else {
         throw new Error(`リンクが見つかりませんでした: ${isbn}`);
       }
@@ -232,20 +235,20 @@
         } catch (error) {
           console.error(error);
           retries++;
-          await new Promise(resolve => setTimeout(resolve, 50)); // 200ミリ秒待機
+          await new Promise(resolve => setTimeout(resolve, 200)); // 200ミリ秒待機
         }
       }
 
       if (!success) {
         console.error(`リンク付与に失敗しました: ${li.textContent}`);
-        results.push({ title: li.textContent, author: '', isbn: '' });
+        results.push({ title: li.textContent, author: '', isbn: '', description: '' });
       }
     }
 
     // 順番通りにCSVデータを作成
     const csvItems = results.map((result) => {
-      const { title, author, isbn } = result;
-      return `"${title}","${author}","${isbn}"`;
+      const { title, author, isbn, description } = result;
+      return `"${title}","${author}","${isbn}","${description.replace(/"/g, '""')}"`;
     });
 
     return csvItems;
@@ -275,9 +278,13 @@
 
     if (data.totalItems > 0) {
       const googleBooksId = data.items[0].id;
-      return `https://www.google.com/books/edition/_/${googleBooksId}`;
+      const description = data.items[0].volumeInfo.description || '';
+      return {
+        link: `https://www.google.com/books/edition/_/${googleBooksId}`,
+        description: description
+      };
     }
-    return null;
+    return { link: null, description: '' };
   }
 
   document.addEventListener("DOMContentLoaded", async function() {
