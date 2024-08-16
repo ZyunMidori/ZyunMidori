@@ -124,7 +124,7 @@
     <ol id="myList" class="hidden">
     <li data-isbn="9784309622033">グレッグ・イーガン『TAP』</li>
     <li data-isbn="9784152094476">グレゴリー・チャイティン『ダーウィンを数学で証明する』</li>
-    <li data-isbn="9784150103026">カート・ヴォネガット・ジュニ『スローターハウス5』</li>
+    <li data-isbn="9784150103026">カート・ヴォネガット・ジュニア『スローターハウス5』</li>
     <li data-isbn="9784781623375">梨『お前の死因にとびきりの恐怖を』</li>
     <li data-isbn="9784794801555">ジャン・ギトン『神と科学: 超実在論に向かって』</li>
     <li data-isbn="9784488018443">円城 塔『ムーンシャイン』</li>
@@ -290,7 +290,7 @@
           const isbn = item.getAttribute('data-isbn');
 
           // 正規表現で著者とタイトルを抽出
-          const match = text.match(/(.+)『(.+)』/);
+          const match = text.match(/^(.+?)『(.+)』$/);
           if (match) {
               const author = match[1].trim();
               const title = match[2].trim();
