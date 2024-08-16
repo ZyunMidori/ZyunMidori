@@ -192,8 +192,11 @@
     <li data-isbn="9784150115944">グレッグ・イーガン『ひとりっ子』</li>
     </ol>
 </div>
+</center>
 <button class="button" onclick="download()">読書記録をダウンロード(CSV)</button>
 <script>
+  var bookDataList = []; // グローバル変数を追加
+
   async function addLinksToList() {
     var ol = document.getElementById('myList');
     var items = Array.from(ol.getElementsByTagName('li'));
@@ -203,7 +206,6 @@
       var isbn = li.getAttribute('data-isbn');
       var match = text.match(/^(.*?)『(.*?)』$/);
 
-      // ISBNが'ISBN'または'null'の場合、スキップ
       if (!match || !isbn || isbn.toLowerCase() === "isbn" || isbn.toLowerCase() === "null") {
         return { title: text, author: '', isbn: '', description: '' };
       }
@@ -217,6 +219,7 @@
       if (bookData.link) {
         li.innerHTML = author + '『<a href="' + bookData.link + '" target="_blank">' + title + '</a>』';
         description = bookData.description || 'No description available';
+        bookDataList.push({ title, author, isbn, description }); // グローバル変数に追加
         return { title, author, isbn, description };
       } else {
         throw new Error(`リンクが見つかりませんでした: ${isbn}`);
@@ -235,7 +238,7 @@
         } catch (error) {
           console.error(error);
           retries++;
-          await new Promise(resolve => setTimeout(resolve, 200)); // 200ミリ秒待機
+          await new Promise(resolve => setTimeout(resolve, 25));
         }
       }
 
@@ -245,31 +248,7 @@
       }
     }
 
-    // 順番通りにCSVデータを作成
-    const csvItems = results.map((result) => {
-      const { title, author, isbn, description } = result;
-      return `"${title}","${author}","${isbn}","${description.replace(/"/g, '""')}"`;
-    });
-
-    return csvItems;
-  }
-
-  async function download() {
-    var items = await addLinksToList();
-
-    var csv = items.join('\n');
-    
-    var today = new Date();
-    var year = today.getFullYear();
-    var month = ('0' + (today.getMonth() + 1)).slice(-2);
-    var day = ('0' + today.getDate()).slice(-2);
-    var fileName = 'readingrecord_' + year + month + day + '.csv';
-    
-    var hiddenElement = document.createElement('a');
-    hiddenElement.href = 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csv);
-    hiddenElement.target = '_blank';
-    hiddenElement.download = fileName;
-    hiddenElement.click();
+    return results;
   }
 
   async function getBookLink(isbn) {
@@ -288,13 +267,62 @@
   }
 
   document.addEventListener("DOMContentLoaded", async function() {
-    // ページ読み込み時にリンクを付与
     await addLinksToList();
-
-    // ボタンクリック時にCSVダウンロード
-    document.getElementById('downloadButton').addEventListener('click', download);
   });
 </script>
-</center>
+
+<script>
+  function download() {
+      const listItems = document.querySelectorAll('#myList > li');
+      const csvRows = [];
+
+      // CSVのヘッダーを追加 (説明の列を追加)
+      csvRows.push(['著者', 'タイトル', 'ISBN', '説明'].join(','));
+
+      listItems.forEach(item => {
+          const text = item.textContent;
+          const isbn = item.getAttribute('data-isbn');
+
+          // 正規表現で著者とタイトルを抽出
+          const match = text.match(/(.+)『(.+)』/);
+          if (match) {
+              const author = match[1].trim();
+              const title = match[2].trim();
+              
+              // グローバル変数から説明を取得
+              const bookData = bookDataList.find(data => data.isbn === isbn) || { description: '' };
+              const description = bookData.description;
+
+              csvRows.push([author, title, isbn, description].join(','));
+          }
+      });
+
+      // CSVファイルの内容を作成
+      const csvString = csvRows.join('\n');
+
+      // BOM (Byte Order Mark) を追加してUTF-8エンコードを指定
+      const bom = '\ufeff';
+      const csvWithBom = bom + csvString;
+      const blob = new Blob([csvWithBom], { type: 'text/csv; charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+
+      // 現在の日付を取得し、ファイル名を生成
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const dateString = `${yyyy}${mm}${dd}`;
+      const filename = `book_records_${dateString}.csv`;
+
+      // ダウンロード用のリンクを作成し、自動的にクリックする
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+  }
+</script>
+
 </body>
 </html>
