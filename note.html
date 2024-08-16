@@ -197,11 +197,10 @@
     var ol = document.getElementById('myList');
     var items = [];
 
-    for (let li of ol.getElementsByTagName('li')) {
+    await Promise.all(Array.from(ol.getElementsByTagName('li')).map(async li => {
       var text = li.textContent;
       var isbn = li.getAttribute('data-isbn');
       var match = text.match(/^(.*?)『(.*?)』$/);
-
       if (match) {
         var author = match[1].trim();
         var title = match[2].trim();
@@ -217,7 +216,7 @@
       } else {
         items.push('"' + text + '",""');
       }
-    }
+    }));
 
     var csv = items.join('\n');
     
@@ -246,7 +245,25 @@
   }
 
   document.addEventListener("DOMContentLoaded", async function() {
-    await download();  // すべてのリンクを取得し、表示
+    var ol = document.getElementById('myList');
+    
+    await Promise.all(Array.from(ol.getElementsByTagName('li')).map(async li => {
+      var text = li.textContent;
+      var isbn = li.getAttribute('data-isbn');
+      var match = text.match(/^(.*?)『(.*?)』$/);
+      if (match) {
+        var author = match[1].trim();
+        var title = match[2].trim();
+        var link = '';
+
+        if (isbn && isbn.toLowerCase() !== "null") {
+          link = await getBookLink(isbn);
+          if (link) {
+            li.innerHTML = author + '『<a href="' + link + '" target="_blank">' + title + '</a>』';
+          }
+        }
+      }
+    }));
   });
 </script>
 
