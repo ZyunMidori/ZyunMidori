@@ -232,12 +232,12 @@
         } catch (error) {
           console.error(error);
           retries++;
-          await new Promise(resolve => setTimeout(resolve, 200)); // 200ミリ秒待機
+          await new Promise(resolve => setTimeout(resolve, 50)); // 200ミリ秒待機
         }
       }
 
       if (!success) {
-        alert(`リンク付与に失敗しました: ${li.textContent}`);
+        console.error(`リンク付与に失敗しました: ${li.textContent}`);
         results.push({ title: li.textContent, author: '', isbn: '' });
       }
     }
@@ -247,15 +247,6 @@
       const { title, author, isbn } = result;
       return `"${title}","${author}","${isbn}"`;
     });
-
-    // 二重チェック
-    let allLinked = items.every(li => li.querySelector('a'));
-
-    if (allLinked) {
-      alert("すべての書籍にリンクが付与されました");
-    } else {
-      alert("一部の書籍にリンクを付与できませんでした");
-    }
 
     return csvItems;
   }
