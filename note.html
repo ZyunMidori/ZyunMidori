@@ -195,9 +195,9 @@
 <script>
   async function addLinksToList() {
     var ol = document.getElementById('myList');
-    var items = [];
+    var items = Array.from(ol.getElementsByTagName('li'));
 
-    var promises = Array.from(ol.getElementsByTagName('li')).map(async li => {
+    async function processLink(li) {
       var text = li.textContent;
       var isbn = li.getAttribute('data-isbn');
       var match = text.match(/^(.*?)『(.*?)』$/);
@@ -210,30 +210,56 @@
           link = await getBookLink(isbn);
           if (link) {
             li.innerHTML = author + '『<a href="' + link + '" target="_blank">' + title + '</a>』';
+            return { title, author, isbn };
+          } else {
+            throw new Error(`リンクが見つかりませんでした: ${isbn}`);
           }
+        } else {
+          throw new Error(`ISBNが無効です: ${isbn}`);
         }
-        items.push('"' + title + '","' + author + '","' + isbn + '"');
       } else {
-        items.push('"' + text + '",""');
-      }
-    });
-
-    await Promise.all(promises);
-
-    // 二重チェック
-    let allLinked = true;
-    for (let li of ol.getElementsByTagName('li')) {
-      if (!li.querySelector('a')) {
-        allLinked = false;
-        break;
+        throw new Error(`無効なフォーマット: ${text}`);
       }
     }
+
+    let results = [];
+    for (let li of items) {
+      let retries = 0;
+      let success = false;
+      while (retries < 5 && !success) {
+        try {
+          let result = await processLink(li);
+          results.push(result);
+          success = true;
+        } catch (error) {
+          console.error(error);
+          retries++;
+          await new Promise(resolve => setTimeout(resolve, 1000)); // 1秒待機
+        }
+      }
+
+      if (!success) {
+        alert(`リンク付与に失敗しました: ${li.textContent}`);
+        results.push({ title: li.textContent, author: '', isbn: '' });
+      }
+    }
+
+    // 順番通りにCSVデータを作成
+    const csvItems = results.map((result) => {
+      const { title, author, isbn } = result;
+      return `"${title}","${author}","${isbn}"`;
+    });
+
+    // 二重チェック
+    let allLinked = items.every(li => li.querySelector('a'));
 
     if (allLinked) {
       alert("すべての書籍にリンクが付与されました");
+    } else {
+      alert("一部の書籍にリンクを付与できませんでした");
     }
 
-    return items;
+    return csvItems;
   }
 
   async function download() {
