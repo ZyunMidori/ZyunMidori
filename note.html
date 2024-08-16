@@ -201,24 +201,22 @@
       var text = li.textContent;
       var isbn = li.getAttribute('data-isbn');
       var match = text.match(/^(.*?)『(.*?)』$/);
-      if (match) {
-        var author = match[1].trim();
-        var title = match[2].trim();
-        var link = '';
 
-        if (isbn && isbn.toLowerCase() !== "null") {
-          link = await getBookLink(isbn);
-          if (link) {
-            li.innerHTML = author + '『<a href="' + link + '" target="_blank">' + title + '</a>』';
-            return { title, author, isbn };
-          } else {
-            throw new Error(`リンクが見つかりませんでした: ${isbn}`);
-          }
-        } else {
-          throw new Error(`ISBNが無効です: ${isbn}`);
-        }
+      // ISBNが'ISBN'または'null'の場合、スキップ
+      if (!match || !isbn || isbn.toLowerCase() === "isbn" || isbn.toLowerCase() === "null") {
+        return { title: text, author: '', isbn: '' };
+      }
+
+      var author = match[1].trim();
+      var title = match[2].trim();
+      var link = '';
+
+      link = await getBookLink(isbn);
+      if (link) {
+        li.innerHTML = author + '『<a href="' + link + '" target="_blank">' + title + '</a>』';
+        return { title, author, isbn };
       } else {
-        throw new Error(`無効なフォーマット: ${text}`);
+        throw new Error(`リンクが見つかりませんでした: ${isbn}`);
       }
     }
 
@@ -234,7 +232,7 @@
         } catch (error) {
           console.error(error);
           retries++;
-          await new Promise(resolve => setTimeout(resolve, 1000)); // 1秒待機
+          await new Promise(resolve => setTimeout(resolve, 200)); // 200ミリ秒待機
         }
       }
 
