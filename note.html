@@ -192,11 +192,16 @@
     </ol>
 </div>
     <button class="button" onclick="download()">読書記録をダウンロード(CSV)</button>
+<script>
+  async function download() {
+    var ol = document.getElementById('myList');
+    var items = [];
+    var retryCount = 0;
+    var maxRetries = 5;
 
-    <script>
-      async function download() {
-        var ol = document.getElementById('myList');
-        var items = await Promise.all(Array.from(ol.getElementsByTagName('li')).map(async li => {
+    while (retryCount < maxRetries) {
+      try {
+        items = await Promise.all(Array.from(ol.getElementsByTagName('li')).map(async li => {
           var text = li.textContent;
           var isbn = li.getAttribute('data-isbn');
           var match = text.match(/^(.*?)『(.*?)』$/);
@@ -204,7 +209,7 @@
             var author = match[1].trim();
             var title = match[2].trim();
             var link = '';
-    
+
             if (isbn && isbn.toLowerCase() !== "null") {
               link = await getBookLink(isbn);
               if (link) {
@@ -216,53 +221,67 @@
             return '"' + text + '",""';
           }
         }));
-        var csv = items.join('\n');
-        
-        var today = new Date();
-        var year = today.getFullYear();
-        var month = ('0' + (today.getMonth() + 1)).slice(-2);
-        var day = ('0' + today.getDate()).slice(-2);
-        var fileName = 'readingrecord_' + year + month + day + '.csv';
-        
-        var hiddenElement = document.createElement('a');
-        hiddenElement.href = 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csv);
-        hiddenElement.target = '_blank';
-        hiddenElement.download = fileName;
-        hiddenElement.click();
+        break;
+      } catch (error) {
+        console.error('Error occurred, retrying...', error);
+        retryCount++;
       }
-    
-      async function getBookLink(isbn) {
-        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
-        const data = await response.json();
-    
-        if (data.totalItems > 0) {
-          const googleBooksId = data.items[0].id;
-          return `https://www.google.com/books/edition/_/${googleBooksId}`;
-        }
-        return null;
+    }
+
+    if (retryCount >= maxRetries) {
+      console.error('Max retries reached. Some items may not have been processed.');
+    }
+
+    var csv = items.join('\n');
+    var today = new Date();
+    var year = today.getFullYear();
+    var month = ('0' + (today.getMonth() + 1)).slice(-2);
+    var day = ('0' + today.getDate()).slice(-2);
+    var fileName = 'readingrecord_' + year + month + day + '.csv';
+
+    var hiddenElement = document.createElement('a');
+    hiddenElement.href = 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csv);
+    hiddenElement.target = '_blank';
+    hiddenElement.download = fileName;
+    hiddenElement.click();
+  }
+
+  async function getBookLink(isbn) {
+    try {
+      const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
+      const data = await response.json();
+
+      if (data.totalItems > 0) {
+        const googleBooksId = data.items[0].id;
+        return `https://www.google.com/books/edition/_/${googleBooksId}`;
       }
-    
-      document.addEventListener("DOMContentLoaded", async function() {
-        var ol = document.getElementById('myList');
-        await Promise.all(Array.from(ol.getElementsByTagName('li')).map(async li => {
-          var text = li.textContent;
-          var isbn = li.getAttribute('data-isbn');
-          var match = text.match(/^(.*?)『(.*?)』$/);
-          if (match) {
-            var author = match[1].trim();
-            var title = match[2].trim();
-            var link = '';
-    
-            if (isbn && isbn.toLowerCase() !== "null") {
-              link = await getBookLink(isbn);
-              if (link) {
-                li.innerHTML = author + '『<a href="' + link + '" target="_blank">' + title + '</a>』';
-              }
-            }
+    } catch (error) {
+      console.error('Failed to fetch book link:', error);
+    }
+    return null;
+  }
+
+  document.addEventListener("DOMContentLoaded", async function() {
+    var ol = document.getElementById('myList');
+    await Promise.all(Array.from(ol.getElementsByTagName('li')).map(async li => {
+      var text = li.textContent;
+      var isbn = li.getAttribute('data-isbn');
+      var match = text.match(/^(.*?)『(.*?)』$/);
+      if (match) {
+        var author = match[1].trim();
+        var title = match[2].trim();
+        var link = '';
+
+        if (isbn && isbn.toLowerCase() !== "null") {
+          link = await getBookLink(isbn);
+          if (link) {
+            li.innerHTML = author + '『<a href="' + link + '" target="_blank">' + title + '</a>』';
           }
-        }));
-      });
-      </script>
+        }
+      }
+    }));
+  });
+</script>
 
 
 </center>
