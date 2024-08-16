@@ -117,7 +117,7 @@
     <li>読書記録をCSVでダウンロードできるようにしました。</li>
     <li>ISBNの存在する書籍の詳細としてGoogleブックスのページをリンクしました。（APIを使っているので結構時間かかります。要修正）</li>
     <li>GoogleBooksAPIから取得できた説明をCSVに追加しました。</li>
-    <li>CSVの要素にAPIから取得したものが含まれているのでダウンロードできないかもしれません。処理が終わったらダイアログが出るのでその後にダウンロードしてください。</li>
+    <li>CSVの要素にAPIから取得したものが含まれているので、リンク処理が終わるまでダウンロードできないかもしれません。処理完了のダイアログ後にお願いします。</li>
 </ul>
 <h3>読書記録(2024/01/01~)</h3>
 <center><div class="scrollable-list">
@@ -232,7 +232,7 @@
     for (let li of items) {
       let retries = 0;
       let success = false;
-      while (retries < 5 && !success) {
+      while (retries < 7 && !success) {
         try {
           let result = await processLink(li);
           results.push(result);
@@ -240,7 +240,7 @@
         } catch (error) {
           console.error(error);
           retries++;
-          await new Promise(resolve => setTimeout(resolve, 25));
+          await new Promise(resolve => setTimeout(resolve, 10));
         }
       }
 
@@ -251,7 +251,7 @@
     }
 
     // ダイアログを表示
-    alert('処理が完了しました。CSVをダウンロードできます。');
+    alert('リンク処理が完了しました。CSVをダウンロードできます。');
 
     return results;
   }
