@@ -197,7 +197,7 @@
     var ol = document.getElementById('myList');
     var items = [];
 
-    await Promise.all(Array.from(ol.getElementsByTagName('li')).map(async li => {
+    var promises = Array.from(ol.getElementsByTagName('li')).map(async li => {
       var text = li.textContent;
       var isbn = li.getAttribute('data-isbn');
       var match = text.match(/^(.*?)『(.*?)』$/);
@@ -216,7 +216,10 @@
       } else {
         items.push('"' + text + '",""');
       }
-    }));
+    });
+
+    await Promise.all(promises);
+    alert("すべての書籍にリンクが付与されました");
 
     var csv = items.join('\n');
     
@@ -246,8 +249,8 @@
 
   document.addEventListener("DOMContentLoaded", async function() {
     var ol = document.getElementById('myList');
-    
-    await Promise.all(Array.from(ol.getElementsByTagName('li')).map(async li => {
+
+    var promises = Array.from(ol.getElementsByTagName('li')).map(async li => {
       var text = li.textContent;
       var isbn = li.getAttribute('data-isbn');
       var match = text.match(/^(.*?)『(.*?)』$/);
@@ -263,9 +266,13 @@
           }
         }
       }
-    }));
+    });
+
+    await Promise.all(promises);
+    alert("すべての書籍にリンクが付与されました");
   });
 </script>
+
 
 
 </center>
