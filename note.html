@@ -289,6 +289,12 @@
               const bookData = bookDataList.find(data => data.isbn === isbn) || { description: '' };
               let description = bookData.description;
 
+              if (!isbn || isbn.toLowerCase() === "null") {
+                  description = 'Null';
+              } else if (description === 'No description available') {
+                  description = 'Null';
+              }
+              
               const escapeCsvField = (field) => {
                   if (field.includes('"')) {
                       field = field.replace(/"/g, '""');
