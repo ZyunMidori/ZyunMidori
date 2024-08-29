@@ -203,6 +203,7 @@
 
 <script>
   var bookDataList = []; // グローバル変数を追加
+  var isbnCache = {};    // ISBNのキャッシュ
 
   async function addLinksToList() {
     var ol = document.getElementById('myList');
@@ -219,41 +220,26 @@
 
       var author = match[1].trim();
       var title = match[2].trim();
-      var link = '';
-      var description = '';
+
+      if (isbnCache[isbn]) {
+        // キャッシュにヒットした場合はキャッシュを利用
+        return isbnCache[isbn];
+      }
 
       const bookData = await getBookLink(isbn);
+      var description = bookData.description || 'No description available';
+
       if (bookData.link) {
         li.innerHTML = author + '『<a href="' + bookData.link + '" target="_blank">' + title + '</a>』';
-        description = bookData.description || 'No description available';
-        bookDataList.push({ title, author, isbn, description }); // グローバル変数に追加
-        return { title, author, isbn, description };
-      } else {
-        throw new Error(`リンクが見つかりませんでした: ${isbn}`);
-      }
-    }
-
-    let results = [];
-    for (let li of items) {
-      let retries = 0;
-      let success = false;
-      while (retries < 7 && !success) {
-        try {
-          let result = await processLink(li);
-          results.push(result);
-          success = true;
-        } catch (error) {
-          console.error(error);
-          retries++;
-          await new Promise(resolve => setTimeout(resolve, 10));
-        }
       }
 
-      if (!success) {
-        console.error(`リンク付与に失敗しました: ${li.textContent}`);
-        results.push({ title: li.textContent, author: '', isbn: '', description: '' });
-      }
+      var result = { title, author, isbn, description };
+      bookDataList.push(result);  // グローバル変数に追加
+      isbnCache[isbn] = result;   // キャッシュに追加
+
+      return result;
     }
+    const results = await Promise.all(items.map(li => processLink(li)));
 
     // ダイアログを表示
     alert('リンク処理が完了しました。CSVをダウンロードできます。');
@@ -281,7 +267,6 @@
   });
 </script>
 
-
 <script>
   function download() {
       const listItems = document.querySelectorAll('#myList > li');
@@ -302,9 +287,14 @@
               
               // グローバル変数から説明を取得
               const bookData = bookDataList.find(data => data.isbn === isbn) || { description: '' };
-              const description = bookData.description;
+              let description = bookData.description;
 
-              csvRows.push([author, title, isbn, description].join(','));
+              // カンマが含まれるフィールドをダブルクォーテーションで囲む
+              if (description.includes(',')) {
+                  description = `"${description}"`;
+              }
+
+              csvRows.push([author, title, isbn, description].map(field => `"${field}"`).join(','));
           }
       });
 
