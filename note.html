@@ -289,19 +289,28 @@
               const bookData = bookDataList.find(data => data.isbn === isbn) || { description: '' };
               let description = bookData.description;
 
-              // カンマが含まれるフィールドをダブルクォーテーションで囲む
-              if (description.includes(',')) {
-                  description = `"${description}"`;
-              }
+              const escapeCsvField = (field) => {
+                  if (field.includes('"')) {
+                      field = field.replace(/"/g, '""');
+                  }
+                  if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+                      field = `"${field}"`;
+                  }
+                  return field;
+              };
 
-              csvRows.push([author, title, isbn, description].map(field => `"${field}"`).join(','));
+              csvRows.push([
+                  escapeCsvField(author), 
+                  escapeCsvField(title), 
+                  escapeCsvField(isbn), 
+                  escapeCsvField(description)
+              ].join(','));
           }
       });
 
       // CSVファイルの内容を作成
       const csvString = csvRows.join('\n');
 
-      // BOM (Byte Order Mark) を追加してUTF-8エンコードを指定
       const bom = '\ufeff';
       const csvWithBom = bom + csvString;
       const blob = new Blob([csvWithBom], { type: 'text/csv; charset=utf-8' });
